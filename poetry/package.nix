@@ -1,11 +1,11 @@
 {
   lib,
   fetchFromGitHub,
-  mkPoetryApplication,
+  poetry2nix,
 }: let
   version = "1.8.2";
 in
-  mkPoetryApplication {
+  poetry2nix.mkPoetryApplication {
     pname = "whisper-asr-webservice";
     inherit version;
 
@@ -15,6 +15,16 @@ in
       tag = "v${version}";
       hash = "sha256-w2NixVPwPplo2r4QeY+5H1M8oBHKhwhFuQ05nh+sDa4=";
     };
+
+    # overrides = poetry2nix.overrides.withDefaults (final: prev: {
+    #   fastapi-cli = prev.fastapi-cli.overridePythonAttrs {
+    #     dependencies = with final; [
+    #       typer
+    #       uvicorn
+    #       uvicorn.optional-dependencies.standard
+    #     ];
+    #   };
+    # });
 
     meta = {
       description = "OpenAI Whisper ASR Webservice API";
