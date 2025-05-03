@@ -24,8 +24,8 @@ in
       faster-whisper
       ffmpeg-python
       llvmlite
-      numba
-      numpy
+      numba # numbaWithCuda
+      numpy_1
       openai-whisper
       python-multipart
       torch
@@ -34,6 +34,11 @@ in
       uvicorn
       whisperx
     ];
+
+    # This package wants numpy 1 despite some of its dependencies wanting numpy
+    # 2, so we have to allow conflicts and relax the dependency even though
+    # everything's fine
+    catchConflicts = false;
 
     pythonRelaxDeps = [
       "numpy"
