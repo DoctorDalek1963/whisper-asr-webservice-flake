@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     poetry2nix.url = "github:nix-community/poetry2nix";
     # poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -11,8 +11,7 @@
 
     poetry2nix = inputs.poetry2nix.lib.mkPoetry2Nix {inherit pkgs;};
 
-    whisper-asr-webservice = import ./package.nix {
-      inherit (pkgs) lib fetchFromGitHub;
+    whisper-asr-webservice = pkgs.callPackage ./package.nix {
       inherit poetry2nix;
     };
   in {
