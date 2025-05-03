@@ -19,6 +19,19 @@ in
 
     python = python310;
 
+    overrides = poetry2nix.overrides.withDefaults (final: prev: {
+      uvicorn = prev.uvicorn.overridePythonAttrs {
+        optional-dependencies.standard = with final; [
+          httptools
+          python-dotenv
+          pyyaml
+          uvloop
+          watchfiles
+          websockets
+        ];
+      };
+    });
+
     meta = {
       description = "OpenAI Whisper ASR Webservice API";
       homepage = "https://ahmetoner.com/whisper-asr-webservice/";
