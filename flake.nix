@@ -2,7 +2,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     poetry2nix.url = "github:nix-community/poetry2nix";
-    # poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {nixpkgs, ...} @ inputs: let
@@ -11,11 +10,18 @@
 
     poetry2nix = inputs.poetry2nix.lib.mkPoetry2Nix {inherit pkgs;};
 
-    whisper-asr-webservice = pkgs.callPackage ./package.nix {
+    whisper-asr-webservice-unwrapped = pkgs.callPackage ./package.nix {
       inherit poetry2nix;
     };
+
+    # TODO: Wrap this with CUDA libs and ffmpeg (and swagger-ui?)
+    whisper-asr-webservice = whisper-asr-webservice-unwrapped;
   in {
-    packages.${system}.default = whisper-asr-webservice;
+    packages.${system} = {
+      default = whisper-asr-webservice;
+
+      inherit whisper-asr-webservice-unwrapped whisper-asr-webservice;
+    };
 
     apps.${system}.default = {
       type = "app";

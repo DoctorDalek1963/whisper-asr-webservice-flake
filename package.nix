@@ -49,7 +49,6 @@ in
       numpy = python312.pkgs.numpy_1;
       numba = python312.pkgs.numbaWithCuda;
 
-      # FIXME: Some files don't exist when trying to clean after pip build
       llvmlite = let
         inherit (llvmPackages_15) llvm;
       in
@@ -80,11 +79,6 @@ in
           websockets
         ];
       };
-
-      # FIXME: Wants ninja but has no build.ninja file
-      # whisperx = prev.whisperx.overrideAttrs (old: {
-      #   nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ninja];
-      # });
 
       fastapi = prev.fastapi.overridePythonAttrs {catchConflicts = false;};
       faster-whisper = prev.faster-whisper.overridePythonAttrs {catchConflicts = false;};
