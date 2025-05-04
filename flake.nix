@@ -14,8 +14,29 @@
       inherit poetry2nix;
     };
 
-    # TODO: Wrap this with CUDA libs and ffmpeg (and swagger-ui?)
-    whisper-asr-webservice = whisper-asr-webservice-unwrapped;
+    whisper-asr-webservice = let
+      cudaLibs = with pkgs.cudaPackages; [
+        cusparselt
+        libcufile
+      ];
+    in
+      pkgs.stdenvNoCC.mkDerivation {
+        inherit (whisper-asr-webservice-unwrapped) pname version;
+
+        dontUnpack = true;
+        nativeBuildInputs = with pkgs; [makeWrapper];
+
+        buildPhase = ''
+          makeWrapper ${whisper-asr-webservice-unwrapped}/bin/whisper-asr-webservice whisper-asr-webservice \
+            --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath cudaLibs}" \
+            --prefix PATH : "${pkgs.jellyfin-ffmpeg}/bin"
+        '';
+
+        installPhase = ''
+          mkdir -p $out/bin
+          cp whisper-asr-webservice $out/bin/
+        '';
+      };
   in {
     packages.${system} = {
       default = whisper-asr-webservice;
