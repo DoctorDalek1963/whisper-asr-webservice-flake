@@ -5,7 +5,6 @@
   poetry2nix,
   llvmPackages_15,
   rdma-core,
-  ninja,
 }: let
   version = "1.8.2";
 in
@@ -36,6 +35,7 @@ in
         tiktoken
         tokenizers
         typing-inspection
+        whisperx # Not quite right version
         ;
 
       numpy = python312.pkgs.numpy_1;
@@ -46,10 +46,11 @@ in
       in
         prev.llvmlite.overridePythonAttrs (old: {
           inherit llvm;
-          nativeBuildInputs = old.nativeBuildInputs or [] ++ [final.llvmlite.llvm];
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [llvm];
 
           # Set directory containing llvm-config binary
-          preConfigure = ''
+          # Should be preConfigure but the configurePhase is empty so it never gets called
+          preBuild = ''
             export LLVM_CONFIG=${llvm.dev}/bin/llvm-config
           '';
 
@@ -72,9 +73,9 @@ in
       };
 
       # FIXME: Wants ninja but has no build.ninja file
-      whisperx = prev.whisperx.overrideAttrs (old: {
-        nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ninja];
-      });
+      # whisperx = prev.whisperx.overrideAttrs (old: {
+      #   nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ninja];
+      # });
 
       fastapi = prev.fastapi.overridePythonAttrs {catchConflicts = false;};
       faster-whisper = prev.faster-whisper.overridePythonAttrs {catchConflicts = false;};
