@@ -23,6 +23,14 @@ in
 
     poetrylock = ./poetry.lock;
 
+    # They want 2.6.0 but we have both 2.6.0 and 2.7.0
+    pythonRelaxDeps = [
+      "torch"
+      "torchaudio"
+    ];
+
+    catchConflicts = false;
+
     overrides = poetry2nix.overrides.withDefaults (final: prev: {
       inherit
         (python312.pkgs)
@@ -39,6 +47,7 @@ in
         ;
 
       numpy = python312.pkgs.numpy_1;
+      numba = python312.pkgs.numbaWithCuda;
 
       # FIXME: Some files don't exist when trying to clean after pip build
       llvmlite = let
@@ -79,6 +88,7 @@ in
 
       fastapi = prev.fastapi.overridePythonAttrs {catchConflicts = false;};
       faster-whisper = prev.faster-whisper.overridePythonAttrs {catchConflicts = false;};
+      openai-whisper = prev.openai-whisper.overridePythonAttrs {catchConflicts = false;};
       pydantic = prev.pydantic.overridePythonAttrs {catchConflicts = false;};
       pyannote-database = prev.pyannote-database.overridePythonAttrs {catchConflicts = false;};
       speechbrain = prev.speechbrain.overridePythonAttrs {catchConflicts = false;};
