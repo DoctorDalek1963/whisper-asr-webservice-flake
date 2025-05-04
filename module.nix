@@ -1,4 +1,5 @@
-{whisper-asr-webservice}: {
+{self}: {
+  pkgs,
   lib,
   config,
   ...
@@ -12,7 +13,7 @@ in {
 
     package = mkOption {
       type = types.package;
-      default = whisper-asr-webservice;
+      default = pkgs.whisper-asr-webservice;
       description = "The whisper-asr-webservice package to use.";
     };
 
@@ -42,6 +43,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    nixpkgs.overlays = [self.overlays.default];
+
     systemd = {
       services.whisper-asr = {
         description = "Whisper ASR";

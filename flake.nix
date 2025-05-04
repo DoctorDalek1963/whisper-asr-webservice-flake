@@ -4,7 +4,11 @@
     poetry2nix.url = "github:nix-community/poetry2nix";
   };
 
-  outputs = {nixpkgs, ...} @ inputs: let
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  } @ inputs: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
 
@@ -49,6 +53,10 @@
       program = "${whisper-asr-webservice}/bin/whisper-asr-webservice";
     };
 
-    nixosModules.default = import ./module.nix {inherit whisper-asr-webservice;};
+    overlays.default = _final: prev: {
+      inherit (self.packages.${prev.system}) whisper-asr-webservice;
+    };
+
+    nixosModules.default = import ./module.nix {inherit self;};
   };
 }
