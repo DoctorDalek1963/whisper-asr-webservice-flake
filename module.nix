@@ -69,7 +69,7 @@ in {
 
     users.users.whisper-asr = lib.mkIf (cfg.user == "whisper-asr") {
       isSystemUser = true;
-      inherit (cfg.server) group;
+      inherit (cfg) group;
       home = cfg.dataDir;
     };
 
