@@ -49,6 +49,6 @@
       program = "${whisper-asr-webservice}/bin/whisper-asr-webservice";
     };
 
-    nixosModules.default = import ./module.nix;
+    nixosModules.default = import ./module.nix {inherit whisper-asr-webservice;};
   };
 }
