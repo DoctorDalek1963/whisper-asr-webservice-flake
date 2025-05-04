@@ -1,7 +1,7 @@
 {
   lib,
   fetchFromGitHub,
-  python310,
+  python312,
   poetry2nix,
 }: let
   version = "1.8.2";
@@ -17,7 +17,10 @@ in
       hash = "sha256-w2NixVPwPplo2r4QeY+5H1M8oBHKhwhFuQ05nh+sDa4=";
     };
 
-    python = python310;
+    python = python312;
+
+    patches = [./pyproject.patch];
+    poetrylock = ./poetry.lock;
 
     overrides = poetry2nix.overrides.withDefaults (final: prev: {
       uvicorn = prev.uvicorn.overridePythonAttrs {
