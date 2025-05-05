@@ -56,6 +56,8 @@ in {
           User = cfg.user;
           Group = cfg.group;
 
+          WorkingDirectory = cfg.dataDir;
+
           Restart = "on-failure";
           RestartSec = 10;
         };
