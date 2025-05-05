@@ -19,6 +19,7 @@
 
     whisper-asr-webservice = let
       cudaLibs = with pkgs.cudaPackages; [
+        cudnn
         cusparselt
         libcufile
       ];
