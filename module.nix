@@ -10,6 +10,18 @@ in {
   options.services.whisper-asr = {
     enable = lib.mkEnableOption "Whisper ASR";
 
+    autoStart = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Whether to automatically start the systemd service for Whisper ASR.
+
+        The AI model is loaded in VRAM on the GPU at all times while the
+        service is running, so on more limited systems, you might want to only
+        run Whisper on demand to save on resources.
+      '';
+    };
+
     package = mkOption {
       type = types.package;
       default = whisper-asr-webservice;
@@ -49,7 +61,8 @@ in {
 
         requires = ["network-online.target"];
         after = ["network-online.target"];
-        wantedBy = ["multi-user.target"];
+
+        wantedBy = lib.mkIf cfg.autoStart ["multi-user.target"];
 
         serviceConfig = {
           Type = "simple";
