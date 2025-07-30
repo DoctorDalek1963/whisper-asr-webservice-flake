@@ -1,12 +1,15 @@
-{whisper-asr-webservice}: {
+{ whisper-asr-webservice }:
+{
   lib,
   config,
   ...
-}: let
+}:
+let
   cfg = config.services.whisper-asr;
 
   inherit (lib) mkOption types;
-in {
+in
+{
   options.services.whisper-asr = {
     enable = lib.mkEnableOption "Whisper ASR";
 
@@ -59,10 +62,10 @@ in {
         description = "Whisper ASR";
         script = "${cfg.package}/bin/whisper-asr-webservice";
 
-        requires = ["network-online.target"];
-        after = ["network-online.target"];
+        requires = [ "network-online.target" ];
+        after = [ "network-online.target" ];
 
-        wantedBy = lib.mkIf cfg.autoStart ["multi-user.target"];
+        wantedBy = lib.mkIf cfg.autoStart [ "multi-user.target" ];
 
         serviceConfig = {
           Type = "simple";
@@ -89,7 +92,7 @@ in {
     };
 
     networking.firewall = lib.mkIf cfg.openFirewall {
-      allowedTCPPorts = [9000];
+      allowedTCPPorts = [ 9000 ];
     };
   };
 }
