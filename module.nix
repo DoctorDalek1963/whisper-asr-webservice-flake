@@ -19,9 +19,10 @@ in
       description = ''
         Whether to automatically start the systemd service for Whisper ASR.
 
-        The AI model is loaded in VRAM on the GPU at all times while the
-        service is running, so on more limited systems, you might want to only
-        run Whisper on demand to save on resources.
+        By default, the AI model is loaded in VRAM on the GPU at all times
+        while the service is running. On more limited systems, the
+        recommendation is to set `settings.modelIdleTimeout` to unload the
+        model automatically, but you might want to only run Whisper on demand.
       '';
     };
 
@@ -54,6 +55,68 @@ in
       default = false;
       description = "Whether to open the port for Whisper ASR in the firewall.";
     };
+
+    settings = {
+      asrEngine = mkOption {
+        type = types.enum [
+          "openai_whisper"
+          "faster_whisper"
+          "whisperx"
+        ];
+        default = "openai_whisper";
+        description = "Engine selection.";
+      };
+
+      asrModel = mkOption {
+        type = types.nonEmptyStr;
+        default = "base";
+        description = "See https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-the-model";
+      };
+
+      asrModelPath = mkOption {
+        type = types.nullOr types.nonEmptyStr;
+        default = null;
+        description = "Custom path to store/load models.";
+      };
+
+      asrDevice = mkOption {
+        type = types.nullOr (
+          types.enum [
+            "cuda"
+            "cpu"
+          ]
+        );
+        default = null;
+        description = "The device to use. Set to `null` to use the default of using cuda if it's available.";
+      };
+
+      asrQuantization = mkOption {
+        type = types.nullOr (
+          types.enum [
+            "float32"
+            "float16"
+            "int8"
+          ]
+        );
+        default = null;
+        description = "The precision for model weights. Set to `null` to use the defaults of float32 on CUDA and int8 on CPU.";
+      };
+
+      modelIdleTimeout = mkOption {
+        type = types.nullOr types.ints.positive;
+        default = null;
+        description = ''
+          Load the AI model into VRAM on demand and unload it after this many
+          seconds of inactivity. Set to `null` to keep the model loaded constantly.
+        '';
+      };
+
+      sampleRate = mkOption {
+        type = types.ints.positive;
+        default = 16000;
+        description = "Sample rate for audio input.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -66,6 +129,27 @@ in
         after = [ "network-online.target" ];
 
         wantedBy = lib.mkIf cfg.autoStart [ "multi-user.target" ];
+
+        environment =
+          let
+            ifNotNull = x: lib.mkIf (x != null) x;
+          in
+          {
+            ASR_ENGINE = cfg.settings.asrEngine;
+
+            ASR_MODEL = cfg.settings.asrModel;
+
+            ASR_MODEL_PATH = ifNotNull cfg.settings.asrModelPath;
+
+            ASR_DEVICE = ifNotNull cfg.settings.asrDevice;
+
+            ASR_QUANTIZATION = ifNotNull cfg.settings.asrQuantization;
+
+            MODEL_IDLE_TIMEOUT =
+              if (cfg.settings.modelIdleTimeout == null) then "0" else toString cfg.settings.modelIdleTimeout;
+
+            SAMPLE_RATE = toString cfg.settings.sampleRate;
+          };
 
         serviceConfig = {
           Type = "simple";
