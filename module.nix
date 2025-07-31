@@ -174,7 +174,7 @@ in
           NoNewPrivileges = true;
 
           PrivateTmp = true;
-          PrivateUsers = false;
+          PrivateUsers = "self";
 
           ProtectClock = true;
           ProtectControlGroups = true;
@@ -186,6 +186,7 @@ in
           ProtectSystem = "strict";
           ReadWritePaths = [ cfg.dataDir ];
 
+          RestrictRealtime = true;
           RestrictSUIDSGID = true;
           SystemCallArchitectures = "native";
 
