@@ -189,7 +189,7 @@ in
           RestrictRealtime = true;
           RestrictSUIDSGID = true;
           SystemCallArchitectures = "native";
-          MemoryDenyWriteExecute = true;
+          MemoryDenyWriteExecute = false;
 
           AmbientCapabilities = "";
           CapabilityBoundingSet = "";
