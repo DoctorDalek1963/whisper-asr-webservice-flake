@@ -160,6 +160,38 @@ in
 
           Restart = "on-failure";
           RestartSec = 10;
+
+          # Hardening
+          IPAddressAllow = "127.0.0.1";
+          RestrictAddressFamilies = [
+            "AF_UNIX"
+            "AF_NETLINK"
+            "AF_INET"
+            "AF_INET6"
+          ];
+
+          LockPersonality = true;
+          NoNewPrivileges = true;
+
+          PrivateTmp = true;
+          PrivateUsers = false;
+
+          ProtectClock = true;
+          ProtectControlGroups = true;
+          ProtectHome = true;
+          ProtectKernelLogs = true;
+          ProtectKernelModules = true;
+          ProtectKernelTunables = true;
+          ProtectProc = "invisible";
+          ProtectSystem = "strict";
+          ReadWritePaths = [ cfg.dataDir ];
+
+          RestrictSUIDSGID = true;
+          SystemCallArchitectures = "native";
+
+          AmbientCapabilities = [ ];
+          CapabilityBoundingSet = [ ];
+          SystemCallFilter = [ "@system-service" ];
         };
       };
 
