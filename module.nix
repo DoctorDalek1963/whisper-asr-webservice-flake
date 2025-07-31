@@ -189,9 +189,10 @@ in
           RestrictRealtime = true;
           RestrictSUIDSGID = true;
           SystemCallArchitectures = "native";
+          MemoryDenyWriteExecute = true;
 
-          AmbientCapabilities = [ ];
-          CapabilityBoundingSet = [ ];
+          AmbientCapabilities = "";
+          CapabilityBoundingSet = "";
           SystemCallFilter = [ "@system-service" ];
         };
       };
